@@ -15,11 +15,18 @@ export default async function RecordDetailPage({ params }: { params: { id: strin
     }
 
     // 获取记录详情
-    const { data: record } = await supabase
+    const { data: recordData } = await supabase
         .from('experiment_records')
-        .select('*')
+        .select(`
+            *,
+            des_formulas(hba_name, hbd_name, molar_ratio, salt_name, water_content, water_content_unit, additives),
+            hydrogel_formulas(polymer_type, crosslink_method),
+            test_results(conclusion)
+        `)
         .eq('id', params.id)
         .single()
+
+    const record = recordData as any
 
     if (!record) {
         notFound()
