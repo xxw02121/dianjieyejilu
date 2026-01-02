@@ -119,8 +119,9 @@ export default function EditRecordPage({ params }: { params: { id: string } }) {
                     .eq('record_id', params.id)
 
                 if (results && results.length > 0) {
-                    setResultId(results[0].id)
-                    setConclusion(results[0].conclusion || '')
+                    const res = results[0] as any
+                    setResultId(res.id)
+                    setConclusion(res.conclusion || '')
                 }
 
             } catch (err: any) {
