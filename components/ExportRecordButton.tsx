@@ -29,6 +29,13 @@ function stringifyTsv(rows: string[][]) {
     return rows.map((row) => row.map(escapeCell).join('\t')).join('\r\n')
 }
 
+function formatMolarRatio(value: any) {
+    if (value === undefined || value === null) return ''
+    const str = String(value)
+    // 避免 Excel 将 "1:3" 识别成时间，前置单引号强制文本
+    return str.includes(':') ? `'${str}` : str
+}
+
 function toUtf16LeBytes(str: string) {
     const buffer = new Uint8Array(str.length * 2)
     for (let i = 0; i < str.length; i++) {
@@ -87,7 +94,7 @@ export function ExportRecordButton({ items, filename = 'records.tsv', disabled }
                     Array.isArray(record?.tags) ? record.tags.join('; ') : '',
                     des?.hba_name || '',
                     des?.hbd_name || '',
-                    des?.molar_ratio || '',
+                    formatMolarRatio(des?.molar_ratio),
                     des?.salt_name || '',
                     des?.salt_concentration || '',
                     des?.water_content ? `${des.water_content} ${des.water_content_unit || ''}` : '',
