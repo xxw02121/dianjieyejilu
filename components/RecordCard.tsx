@@ -21,8 +21,16 @@ import { Trash2Icon } from 'lucide-react'
 import { formatDateTime } from '@/lib/utils'
 
 interface RecordCardProps {
-    record: any
-    // 这里用 any 是为了简化，实际应该用完整的类型定义
+    record: {
+        id: string
+        title: string
+        created_at: string
+        research_type: string
+        tags: string[] | null
+        des_formulas?: any[]
+        hydrogel_formulas?: any[]
+        test_results?: any[]
+    }
 }
 
 export function RecordCard({ record }: RecordCardProps) {
@@ -162,10 +170,8 @@ export function RecordCard({ record }: RecordCardProps) {
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <Button
-                            variant="destructive"
-                            size="icon"
-                            className="h-8 w-8 shadow-sm"
-                            onClick={(e) => e.stopPropagation()}
+                            className="h-8 w-8 p-0 shadow-sm bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            onClick={(e: React.MouseEvent) => e.stopPropagation()}
                         >
                             <Trash2Icon className="h-4 w-4" />
                         </Button>

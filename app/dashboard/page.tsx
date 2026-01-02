@@ -48,7 +48,7 @@ export default async function DashboardPage() {
                             {user.email}
                         </span>
                         <form action={handleSignOut}>
-                            <Button variant="ghost" size="sm" type="submit">
+                            <Button className="h-8 px-3 text-xs hover:bg-accent hover:text-accent-foreground" type="submit">
                                 <LogOutIcon className="h-4 w-4 mr-2" />
                                 登出
                             </Button>
@@ -94,7 +94,7 @@ export default async function DashboardPage() {
                     </Card>
                 ) : (
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {records.map((record) => (
+                        {records.map((record: any) => (
                             <RecordCard key={record.id} record={record} />
                         ))}
                     </div>
