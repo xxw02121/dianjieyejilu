@@ -149,8 +149,8 @@ export default function EditRecordPage({ params }: { params: { id: string } }) {
 
         try {
             // 1. 更新主记录
-            const { error: recordError } = await supabase
-                .from('experiment_records')
+            const { error: recordError } = await (supabase
+                .from('experiment_records') as any)
                 .update({
                     title,
                     research_type: researchType,
@@ -176,8 +176,8 @@ export default function EditRecordPage({ params }: { params: { id: string } }) {
                 }
 
                 const { error: desError } = formulaId
-                    ? await supabase.from('des_formulas').update(desData).eq('id', formulaId)
-                    : await supabase.from('des_formulas').insert(desData)
+                    ? await (supabase.from('des_formulas') as any).update(desData).eq('id', formulaId)
+                    : await (supabase.from('des_formulas') as any).insert(desData)
 
                 if (desError) throw desError
             } else if (researchType === 'hydrogel') {
@@ -188,8 +188,8 @@ export default function EditRecordPage({ params }: { params: { id: string } }) {
                     notes: gelNotes,
                 }
                 const { error: gelError } = formulaId
-                    ? await supabase.from('hydrogel_formulas').update(gelData).eq('id', formulaId)
-                    : await supabase.from('hydrogel_formulas').insert(gelData)
+                    ? await (supabase.from('hydrogel_formulas') as any).update(gelData).eq('id', formulaId)
+                    : await (supabase.from('hydrogel_formulas') as any).insert(gelData)
 
                 if (gelError) throw gelError
             }
@@ -201,8 +201,8 @@ export default function EditRecordPage({ params }: { params: { id: string } }) {
                     conclusion,
                 }
                 const { error: resultError } = resultId
-                    ? await supabase.from('test_results').update(resData).eq('id', resultId)
-                    : await supabase.from('test_results').insert(resData)
+                    ? await (supabase.from('test_results') as any).update(resData).eq('id', resultId)
+                    : await (supabase.from('test_results') as any).insert(resData)
 
                 if (resultError) throw resultError
             }
