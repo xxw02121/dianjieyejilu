@@ -85,7 +85,8 @@ export function ExportRecordButton({
                 })
             }
 
-            const csv = stringifyCsv(rows)
+            // 预置 UTF-8 BOM 以避免 Excel 打开乱码
+            const csv = '\uFEFF' + stringifyCsv(rows)
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
             const url = URL.createObjectURL(blob)
             const link = document.createElement('a')
