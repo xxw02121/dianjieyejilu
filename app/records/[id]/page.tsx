@@ -33,24 +33,27 @@ export default async function RecordDetailPage({ params }: { params: { id: strin
     }
 
     // 获取DES配方
-    const { data: desFormula } = await supabase
+    const { data: desFormulaData } = await supabase
         .from('des_formulas')
         .select('*')
         .eq('record_id', params.id)
         .single()
+    const desFormula = desFormulaData as any
 
     // 获取水凝胶配方
-    const { data: hydrogelFormula } = await supabase
+    const { data: hydrogelFormulaData } = await supabase
         .from('hydrogel_formulas')
         .select('*')
         .eq('record_id', params.id)
         .single()
+    const hydrogelFormula = hydrogelFormulaData as any
 
     // 获取测试结果
-    const { data: results } = await supabase
+    const { data: resultsData } = await supabase
         .from('test_results')
         .select('*')
         .eq('record_id', params.id)
+    const results = resultsData as any[]
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -86,7 +89,7 @@ export default async function RecordDetailPage({ params }: { params: { id: strin
                     </p>
                     {record.tags && record.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2 mt-4">
-                            {record.tags.map((tag, index) => (
+                            {(record.tags as any).map((tag: any, index: number) => (
                                 <span
                                     key={index}
                                     className="text-sm px-3 py-1 rounded-full bg-primary/10 text-primary"

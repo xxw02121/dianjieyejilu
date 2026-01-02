@@ -65,7 +65,7 @@ export default function NewRecordPage() {
                     title,
                     research_type: researchType,
                     tags: tags ? tags.split(',').map(t => t.trim()) : [],
-                })
+                } as any)
                 .select()
                 .single()
 
@@ -88,7 +88,7 @@ export default function NewRecordPage() {
                         water_content_unit: waterContentUnit,
                         additives: additives ? { text: additives } : null,
                         notes: desNotes,
-                    })
+                    } as any)
                 if (desError) throw desError
             }
 
@@ -100,7 +100,7 @@ export default function NewRecordPage() {
                         polymer_type: polymerType,
                         crosslink_method: crosslinkMethod,
                         notes: gelNotes,
-                    })
+                    } as any)
                 if (gelError) throw gelError
             }
 
@@ -111,7 +111,7 @@ export default function NewRecordPage() {
                     .insert({
                         record_id: record.id,
                         conclusion,
-                    })
+                    } as any)
                 if (resultError) throw resultError
             }
 
