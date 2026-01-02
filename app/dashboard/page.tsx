@@ -5,8 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Link from 'next/link'
 import { BeakerIcon, LogOutIcon, PlusIcon, SearchIcon } from 'lucide-react'
 import { formatDateTime } from '@/lib/utils'
-import { RecordCard } from '@/components/RecordCard'
-import { ExportRecordButton } from '@/components/ExportRecordButton'
+import { RecordsExportSection } from '@/components/RecordsExportSection'
 
 export default async function DashboardPage() {
     const supabase = await createClient()
@@ -68,23 +67,6 @@ export default async function DashboardPage() {
                             共 {records?.length || 0} 条记录
                         </p>
                     </div>
-                    <div className="flex gap-2">
-                        <ExportRecordButton
-                            items={(records as any[])?.map((r) => ({
-                                record: r,
-                                desFormula: r.des_formulas,
-                                hydrogelFormula: r.hydrogel_formulas,
-                                results: r.test_results,
-                            })) || []}
-                            filename="records.tsv"
-                        />
-                        <Button asChild>
-                            <Link href="/records/new">
-                                <PlusIcon className="h-4 w-4 mr-2" />
-                                新建记录
-                            </Link>
-                        </Button>
-                    </div>
                 </div>
 
                 {/* 记录列表 */}
@@ -105,11 +87,7 @@ export default async function DashboardPage() {
                         </CardContent>
                     </Card>
                 ) : (
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {records.map((record: any) => (
-                            <RecordCard key={record.id} record={record} />
-                        ))}
-                    </div>
+                    <RecordsExportSection records={records as any[]} />
                 )}
             </main>
         </div>

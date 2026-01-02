@@ -14,6 +14,7 @@ type ExportItem = {
 type Props = {
     items: ExportItem[]
     filename?: string
+    disabled?: boolean
 }
 
 function escapeCell(value: any) {
@@ -38,7 +39,7 @@ function toUtf16LeBytes(str: string) {
     return buffer
 }
 
-export function ExportRecordButton({ items, filename = 'records.tsv' }: Props) {
+export function ExportRecordButton({ items, filename = 'records.tsv', disabled }: Props) {
     const handleExport = useCallback(() => {
         try {
             const rows: string[][] = []
@@ -64,9 +65,13 @@ export function ExportRecordButton({ items, filename = 'records.tsv' }: Props) {
 
             items.forEach((item) => {
                 const record = item.record
-                const des = item.desFormula || record?.des_formulas
-                const hydrogel = item.hydrogelFormula || record?.hydrogel_formulas
-                const resList = item.results || record?.test_results || []
+                const desSource = item.desFormula || record?.des_formulas
+                const hydrogelSource = item.hydrogelFormula || record?.hydrogel_formulas
+                const resSource = item.results || record?.test_results || []
+
+                const des = Array.isArray(desSource) ? desSource[0] : desSource
+                const hydrogel = Array.isArray(hydrogelSource) ? hydrogelSource[0] : hydrogelSource
+                const resList = Array.isArray(resSource) ? resSource : []
 
                 const conclusions = Array.isArray(resList)
                     ? resList.map((r: any) => r?.conclusion).filter(Boolean).join('\n')
@@ -114,7 +119,7 @@ export function ExportRecordButton({ items, filename = 'records.tsv' }: Props) {
     }, [filename, items])
 
     return (
-        <Button variant="outline" onClick={handleExport}>
+        <Button variant="outline" onClick={handleExport} disabled={disabled || items.length === 0}>
             <DownloadIcon className="h-4 w-4 mr-2" />
             导出表格
         </Button>
