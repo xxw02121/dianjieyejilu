@@ -68,7 +68,7 @@ export default function EditRecordPage({ params }: { params: { id: string } }) {
                 setTags(r.tags ? r.tags.join(', ') : '')
 
                 // 2. 根据类型获取配方
-                if (record.research_type === 'des_electrolyte') {
+                if (r.research_type === 'des_electrolyte') {
                     const { data: des, error: desError } = await supabase
                         .from('des_formulas')
                         .select('*')
@@ -96,7 +96,7 @@ export default function EditRecordPage({ params }: { params: { id: string } }) {
                             }
                         }
                     }
-                } else if (record.research_type === 'hydrogel') {
+                } else if (r.research_type === 'hydrogel') {
                     const { data: gel, error: gelError } = await supabase
                         .from('hydrogel_formulas')
                         .select('*')
