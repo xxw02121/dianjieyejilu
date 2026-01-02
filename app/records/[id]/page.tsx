@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Link from 'next/link'
 import { ArrowLeftIcon, EditIcon, Share2Icon } from 'lucide-react'
 import { formatDateTime } from '@/lib/utils'
+import { ExportRecordButton } from '@/components/ExportRecordButton'
 
 export default async function RecordDetailPage({ params }: { params: { id: string } }) {
     const supabase = await createClient()
@@ -72,6 +73,10 @@ export default async function RecordDetailPage({ params }: { params: { id: strin
                                 编辑
                             </Link>
                         </Button>
+                        <ExportRecordButton
+                            data={{ record, desFormula, hydrogelFormula, results }}
+                            filename={`record-${params.id}.json`}
+                        />
                         <Button>
                             <Share2Icon className="h-4 w-4 mr-2" />
                             分享
