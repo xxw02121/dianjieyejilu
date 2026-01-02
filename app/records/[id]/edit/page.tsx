@@ -62,9 +62,10 @@ export default function EditRecordPage({ params }: { params: { id: string } }) {
                 if (recordError) throw recordError
                 if (!record) throw new Error('记录不存在')
 
-                setTitle(record.title)
-                setResearchType(record.research_type as any)
-                setTags(record.tags ? record.tags.join(', ') : '')
+                const r = record as any
+                setTitle(r.title)
+                setResearchType(r.research_type)
+                setTags(r.tags ? r.tags.join(', ') : '')
 
                 // 2. 根据类型获取配方
                 if (record.research_type === 'des_electrolyte') {
@@ -75,22 +76,23 @@ export default function EditRecordPage({ params }: { params: { id: string } }) {
                         .single()
 
                     if (des && !desError) {
-                        setFormulaId(des.id)
-                        setHbaName(des.hba_name || '')
-                        setHbdName(des.hbd_name || '')
-                        setMolarRatio(des.molar_ratio || '')
-                        setSaltName(des.salt_name || '')
-                        setSaltConcentration(des.salt_concentration || '')
-                        setDesNotes(des.notes || '')
-                        setWaterContent(des.water_content ? des.water_content.toString() : '')
-                        setWaterContentUnit(des.water_content_unit || 'wt%')
+                        const d = des as any
+                        setFormulaId(d.id)
+                        setHbaName(d.hba_name || '')
+                        setHbdName(d.hbd_name || '')
+                        setMolarRatio(d.molar_ratio || '')
+                        setSaltName(d.salt_name || '')
+                        setSaltConcentration(d.salt_concentration || '')
+                        setDesNotes(d.notes || '')
+                        setWaterContent(d.water_content ? d.water_content.toString() : '')
+                        setWaterContentUnit(d.water_content_unit || 'wt%')
 
                         // 处理添加剂：如果是对象且有 text 属性，或者数组转字符串
-                        if (des.additives) {
-                            if (Array.isArray(des.additives)) {
-                                setAdditives(des.additives.join(', '))
-                            } else if (typeof des.additives === 'object' && (des.additives as any).text) {
-                                setAdditives((des.additives as any).text)
+                        if (d.additives) {
+                            if (Array.isArray(d.additives)) {
+                                setAdditives(d.additives.join(', '))
+                            } else if (typeof d.additives === 'object' && (d.additives as any).text) {
+                                setAdditives((d.additives as any).text)
                             }
                         }
                     }
@@ -102,10 +104,11 @@ export default function EditRecordPage({ params }: { params: { id: string } }) {
                         .single()
 
                     if (gel && !gelError) {
-                        setFormulaId(gel.id)
-                        setPolymerType(gel.polymer_type || '')
-                        setCrosslinkMethod(gel.crosslink_method || '')
-                        setGelNotes(gel.notes || '')
+                        const g = gel as any
+                        setFormulaId(g.id)
+                        setPolymerType(g.polymer_type || '')
+                        setCrosslinkMethod(g.crosslink_method || '')
+                        setGelNotes(g.notes || '')
                     }
                 }
 
