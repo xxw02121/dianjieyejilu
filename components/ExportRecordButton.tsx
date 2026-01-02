@@ -14,14 +14,24 @@ type Props = {
 
 function escapeCsv(value: any) {
     const str = value === undefined || value === null ? '' : String(value)
-    if (/[",\n]/.test(str)) {
+    if (/["\t\n]/.test(str)) {
         return `"${str.replace(/"/g, '""')}"`
     }
     return str
 }
 
-function stringifyCsv(rows: string[][]) {
-    return rows.map((row) => row.map(escapeCsv).join(',')).join('\r\n')
+function stringifyTsv(rows: string[][]) {
+    return rows.map((row) => row.map(escapeCsv).join('\t')).join('\r\n')
+}
+
+function toUtf16LeBytes(str: string) {
+    const buffer = new Uint8Array(str.length * 2)
+    for (let i = 0; i < str.length; i++) {
+        const code = str.charCodeAt(i)
+        buffer[i * 2] = code & 0xff
+        buffer[i * 2 + 1] = code >> 8
+    }
+    return buffer
 }
 
 export function ExportRecordButton({
@@ -29,7 +39,7 @@ export function ExportRecordButton({
     desFormula,
     hydrogelFormula,
     results,
-    filename = 'record.csv',
+    filename = 'record.tsv',
 }: Props) {
     const handleExport = useCallback(() => {
         try {
@@ -85,9 +95,10 @@ export function ExportRecordButton({
                 })
             }
 
-            // 预置 UTF-8 BOM 以避免 Excel 打开乱码
-            const csv = '\uFEFF' + stringifyCsv(rows)
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+            // 使用 UTF-16LE + BOM，Excel（中文环境）兼容性更好
+            const tsv = '\uFEFF' + stringifyTsv(rows)
+            const encoded = toUtf16LeBytes(tsv)
+            const blob = new Blob([encoded], { type: 'text/tab-separated-values;charset=utf-16le;' })
             const url = URL.createObjectURL(blob)
             const link = document.createElement('a')
             link.href = url

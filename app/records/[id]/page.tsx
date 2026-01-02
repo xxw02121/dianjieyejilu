@@ -78,7 +78,7 @@ export default async function RecordDetailPage({ params }: { params: { id: strin
                             desFormula={desFormula}
                             hydrogelFormula={hydrogelFormula}
                             results={results}
-                            filename={`record-${params.id}.csv`}
+                            filename={`record-${params.id}.tsv`}
                         />
                         <Button>
                             <Share2Icon className="h-4 w-4 mr-2" />
