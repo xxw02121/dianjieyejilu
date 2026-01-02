@@ -74,8 +74,11 @@ export default async function RecordDetailPage({ params }: { params: { id: strin
                             </Link>
                         </Button>
                         <ExportRecordButton
-                            data={{ record, desFormula, hydrogelFormula, results }}
-                            filename={`record-${params.id}.json`}
+                            record={record}
+                            desFormula={desFormula}
+                            hydrogelFormula={hydrogelFormula}
+                            results={results}
+                            filename={`record-${params.id}.csv`}
                         />
                         <Button>
                             <Share2Icon className="h-4 w-4 mr-2" />
