@@ -58,7 +58,7 @@ export default function NewRecordPage() {
 
         try {
             // 1. 创建实验记录
-            const { data: record, error: recordError } = await supabase
+            const { data: recordData, error: recordError } = await supabase
                 .from('experiment_records')
                 .insert({
                     user_id: user.id,
@@ -68,6 +68,8 @@ export default function NewRecordPage() {
                 })
                 .select()
                 .single()
+
+            const record = recordData as any
 
             if (recordError) throw recordError
 
