@@ -74,10 +74,14 @@ export default async function RecordDetailPage({ params }: { params: { id: strin
                             </Link>
                         </Button>
                         <ExportRecordButton
-                            record={record}
-                            desFormula={desFormula}
-                            hydrogelFormula={hydrogelFormula}
-                            results={results}
+                            items={[
+                                {
+                                    record,
+                                    desFormula,
+                                    hydrogelFormula,
+                                    results,
+                                },
+                            ]}
                             filename={`record-${params.id}.tsv`}
                         />
                         <Button>

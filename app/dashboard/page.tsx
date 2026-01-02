@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { BeakerIcon, LogOutIcon, PlusIcon, SearchIcon } from 'lucide-react'
 import { formatDateTime } from '@/lib/utils'
 import { RecordCard } from '@/components/RecordCard'
+import { ExportRecordButton } from '@/components/ExportRecordButton'
 
 export default async function DashboardPage() {
     const supabase = await createClient()
@@ -21,9 +22,9 @@ export default async function DashboardPage() {
         .from('experiment_records')
         .select(`
             *,
-            des_formulas(hba_name, hbd_name, molar_ratio, salt_name, water_content, water_content_unit, additives),
+            des_formulas(hba_name, hbd_name, molar_ratio, salt_name, salt_concentration, water_content, water_content_unit, additives, notes),
             hydrogel_formulas(polymer_type, crosslink_method),
-            test_results(conclusion)
+            test_results(conclusion, failure_reason)
         `)
         .order('created_at', { ascending: false })
 
@@ -67,12 +68,23 @@ export default async function DashboardPage() {
                             共 {records?.length || 0} 条记录
                         </p>
                     </div>
-                    <Button asChild>
-                        <Link href="/records/new">
-                            <PlusIcon className="h-4 w-4 mr-2" />
-                            新建记录
-                        </Link>
-                    </Button>
+                    <div className="flex gap-2">
+                        <ExportRecordButton
+                            items={(records as any[])?.map((r) => ({
+                                record: r,
+                                desFormula: r.des_formulas,
+                                hydrogelFormula: r.hydrogel_formulas,
+                                results: r.test_results,
+                            })) || []}
+                            filename="records.tsv"
+                        />
+                        <Button asChild>
+                            <Link href="/records/new">
+                                <PlusIcon className="h-4 w-4 mr-2" />
+                                新建记录
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
 
                 {/* 记录列表 */}

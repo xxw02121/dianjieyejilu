@@ -4,15 +4,19 @@ import { useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { DownloadIcon } from 'lucide-react'
 
-type Props = {
+type ExportItem = {
     record: any
     desFormula?: any
     hydrogelFormula?: any
     results?: any[]
+}
+
+type Props = {
+    items: ExportItem[]
     filename?: string
 }
 
-function escapeCsv(value: any) {
+function escapeCell(value: any) {
     const str = value === undefined || value === null ? '' : String(value)
     if (/["\t\n]/.test(str)) {
         return `"${str.replace(/"/g, '""')}"`
@@ -21,7 +25,7 @@ function escapeCsv(value: any) {
 }
 
 function stringifyTsv(rows: string[][]) {
-    return rows.map((row) => row.map(escapeCsv).join('\t')).join('\r\n')
+    return rows.map((row) => row.map(escapeCell).join('\t')).join('\r\n')
 }
 
 function toUtf16LeBytes(str: string) {
@@ -34,68 +38,66 @@ function toUtf16LeBytes(str: string) {
     return buffer
 }
 
-export function ExportRecordButton({
-    record,
-    desFormula,
-    hydrogelFormula,
-    results,
-    filename = 'record.tsv',
-}: Props) {
+export function ExportRecordButton({ items, filename = 'records.tsv' }: Props) {
     const handleExport = useCallback(() => {
         try {
             const rows: string[][] = []
-            rows.push(['分类', '字段', '值'])
+            rows.push([
+                '标题',
+                '研究类型',
+                '创建时间',
+                '标签',
+                'HBA',
+                'HBD',
+                '摩尔比',
+                '盐名称',
+                '盐浓度',
+                '水含量',
+                '添加剂',
+                'DES 备注',
+                '聚合物类型',
+                '交联方式',
+                '水凝胶备注',
+                '测试结论',
+                '失败原因',
+            ])
 
-            rows.push(['基础信息', '标题', record?.title || ''])
-            rows.push(['基础信息', '研究类型', record?.research_type || ''])
-            rows.push(['基础信息', '创建时间', record?.created_at || ''])
-            rows.push(['基础信息', '标签', Array.isArray(record?.tags) ? record.tags.join('; ') : ''])
+            items.forEach((item) => {
+                const record = item.record
+                const des = item.desFormula || record?.des_formulas
+                const hydrogel = item.hydrogelFormula || record?.hydrogel_formulas
+                const resList = item.results || record?.test_results || []
 
-            if (desFormula) {
-                rows.push(['DES 电解液', 'HBA', desFormula.hba_name || ''])
-                rows.push(['DES 电解液', 'HBD', desFormula.hbd_name || ''])
-                rows.push(['DES 电解液', '摩尔比', desFormula.molar_ratio || ''])
-                rows.push(['DES 电解液', '盐名称', desFormula.salt_name || ''])
-                rows.push(['DES 电解液', '盐浓度', desFormula.salt_concentration || ''])
+                const conclusions = Array.isArray(resList)
+                    ? resList.map((r: any) => r?.conclusion).filter(Boolean).join('\n')
+                    : ''
+                const failures = Array.isArray(resList)
+                    ? resList.map((r: any) => r?.failure_reason).filter(Boolean).join('\n')
+                    : ''
+
                 rows.push([
-                    'DES 电解液',
-                    '水含量',
-                    desFormula.water_content
-                        ? `${desFormula.water_content} ${desFormula.water_content_unit || ''}`
-                        : '',
+                    record?.title || '',
+                    record?.research_type || '',
+                    record?.created_at || '',
+                    Array.isArray(record?.tags) ? record.tags.join('; ') : '',
+                    des?.hba_name || '',
+                    des?.hbd_name || '',
+                    des?.molar_ratio || '',
+                    des?.salt_name || '',
+                    des?.salt_concentration || '',
+                    des?.water_content ? `${des.water_content} ${des.water_content_unit || ''}` : '',
+                    Array.isArray(des?.additives)
+                        ? des.additives.join('; ')
+                        : des?.additives?.text || '',
+                    des?.notes || '',
+                    hydrogel?.polymer_type || '',
+                    hydrogel?.crosslink_method || '',
+                    hydrogel?.notes || '',
+                    conclusions,
+                    failures,
                 ])
-                rows.push([
-                    'DES 电解液',
-                    '添加剂',
-                    Array.isArray(desFormula.additives)
-                        ? desFormula.additives.join('; ')
-                        : desFormula.additives?.text || '',
-                ])
-                rows.push(['DES 电解液', '备注', desFormula.notes || ''])
-            }
+            })
 
-            if (hydrogelFormula) {
-                rows.push(['水凝胶', '聚合物类型', hydrogelFormula.polymer_type || ''])
-                rows.push(['水凝胶', '交联方式', hydrogelFormula.crosslink_method || ''])
-                rows.push(['水凝胶', '备注', hydrogelFormula.notes || ''])
-            }
-
-            if (results && results.length) {
-                results.forEach((res, idx) => {
-                    rows.push([
-                        `测试结果${results.length > 1 ? `#${idx + 1}` : ''}`,
-                        '结论',
-                        res.conclusion || '',
-                    ])
-                    rows.push([
-                        `测试结果${results.length > 1 ? `#${idx + 1}` : ''}`,
-                        '失败原因',
-                        res.failure_reason || '',
-                    ])
-                })
-            }
-
-            // 使用 UTF-16LE + BOM，Excel（中文环境）兼容性更好
             const tsv = '\uFEFF' + stringifyTsv(rows)
             const encoded = toUtf16LeBytes(tsv)
             const blob = new Blob([encoded], { type: 'text/tab-separated-values;charset=utf-16le;' })
@@ -109,7 +111,7 @@ export function ExportRecordButton({
             console.error('导出记录失败', err)
             alert('导出失败，请稍后再试')
         }
-    }, [desFormula, filename, hydrogelFormula, record, results])
+    }, [filename, items])
 
     return (
         <Button variant="outline" onClick={handleExport}>
